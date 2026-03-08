@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indian Financial Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Advisor-grade planning dashboard</p>
+        <h1>Indian Financial Planner</h1>
+        <p class="hero-text">
+          Capture household financial details, generate a dynamic financial plan, and download
+          the final report as Excel or PDF from any modern browser.
+        </p>
+      </div>
+      <div class="hero-actions">
+        <button class="secondary-button" type="button" id="loadSampleDataBtn">Load Sample Data</button>
+        <button class="primary-button" type="button" id="generatePlanBtnTop">Generate Plan</button>
+      </div>
+    </header>
+
+    <main class="main-layout">
+      <section class="panel form-panel">
+        <div class="panel-header">
+          <div>
+            <p class="section-kicker">Input wizard</p>
+            <h2>Household Profile</h2>
+          </div>
+          <div class="progress-wrapper">
+            <span id="stepCounter">Step 1 of 8</span>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="step-tabs" id="stepTabs" aria-label="Financial planner steps">
+          <button class="step-tab active" type="button" data-step-target="0">Family</button>
+          <button class="step-tab" type="button" data-step-target="1">Income</button>
+          <button class="step-tab" type="button" data-step-target="2">Expenses</button>
+          <button class="step-tab" type="button" data-step-target="3">Assets</button>
+          <button class="step-tab" type="button" data-step-target="4">Liabilities</button>
+          <button class="step-tab" type="button" data-step-target="5">Insurance</button>
+          <button class="step-tab" type="button" data-step-target="6">Goals</button>
+          <button class="step-tab" type="button" data-step-target="7">Emergency</button>
+        </nav>
+
+        <form id="plannerForm">
+          <section class="wizard-step active" data-step="0">
+            <div class="section-heading">
+              <h3>Family Profile</h3>
+              <p>Set the household name and capture every family member.</p>
+            </div>
+
+            <div class="grid two-column">
+              <label class="field">
+                <span>Household name</span>
+                <input type="text" name="householdName" placeholder="Sharma Family">
+              </label>
+              <label class="field">
+                <span>Planning year</span>
+                <input type="number" name="planningYear" min="2024" max="2100">
+              </label>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-header">
+                <div>
+                  <h4>Family Members</h4>
+                  <p>Add earning and dependent members.</p>
+                </div>
+                <button class="secondary-button add-row-btn" type="button" data-table="familyRows">Add Member</button>
+              </div>
+              <div class="dynamic-table" id="familyRows"></div>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="1">
+            <div class="section-heading">
+              <h3>Income Details</h3>
+              <p>Capture salary, bonus, growth assumptions, and retirement timelines.</p>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-header">
+                <div>
+                  <h4>Income Sources</h4>
+                  <p>One row per earning member or income stream.</p>
+                </div>
+                <button class="secondary-button add-row-btn" type="button" data-table="incomeRows">Add Income</button>
+              </div>
+              <div class="dynamic-table" id="incomeRows"></div>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="2">
+            <div class="section-heading">
+              <h3>Expenses</h3>
+              <p>Track essential and discretionary costs with inflation assumptions.</p>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-header">
+                <div>
+                  <h4>Monthly Expenses</h4>
+                  <p>Mark each item as essential or discretionary.</p>
+                </div>
+                <button class="secondary-button add-row-btn" type="button" data-table="expenseRows">Add Expense</button>
+              </div>
+              <div class="dynamic-table" id="expenseRows"></div>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="3">
+            <div class="section-heading">
+              <h3>Assets & Investments</h3>
+              <p>Include bank balances, SIPs, EPF, PPF, mutual funds, and real estate.</p>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-header">
+                <div>
+                  <h4>Asset Inventory</h4>
+                  <p>Track current value, SIPs, expected return, and liquidity.</p>
+                </div>
+                <button class="secondary-button add-row-btn" type="button" data-table="assetRows">Add Asset</button>
+              </div>
+              <div class="dynamic-table" id="assetRows"></div>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="4">
+            <div class="section-heading">
+              <h3>Liabilities</h3>
+              <p>Capture current loans, EMI load, interest rate, and outstanding balances.</p>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-header">
+                <div>
+                  <h4>Loan Details</h4>
+                  <p>Include home, car, personal, and education loans.</p>
+                </div>
+                <button class="secondary-button add-row-btn" type="button" data-table="liabilityRows">Add Liability</button>
+              </div>
+              <div class="dynamic-table" id="liabilityRows"></div>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="5">
+            <div class="section-heading">
+              <h3>Insurance</h3>
+              <p>Evaluate life, health, and critical illness coverage adequacy.</p>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-header">
+                <div>
+                  <h4>Insurance Policies</h4>
+                  <p>Add all active policies with cover and premium details.</p>
+                </div>
+                <button class="secondary-button add-row-btn" type="button" data-table="insuranceRows">Add Policy</button>
+              </div>
+              <div class="dynamic-table" id="insuranceRows"></div>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="6">
+            <div class="section-heading">
+              <h3>Financial Goals</h3>
+              <p>Project future value and monthly investments needed for each goal.</p>
+            </div>
+
+            <div class="subsection">
+              <div class="subsection-header">
+                <div>
+                  <h4>Goals</h4>
+                  <p>Retirement, education, marriage, vacation, or major purchases.</p>
+                </div>
+                <button class="secondary-button add-row-btn" type="button" data-table="goalRows">Add Goal</button>
+              </div>
+              <div class="dynamic-table" id="goalRows"></div>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="7">
+            <div class="section-heading">
+              <h3>Emergency & Dependency</h3>
+              <p>Capture liquidity, tax utilization, and family dependency context.</p>
+            </div>
+
+            <div class="grid two-column">
+              <label class="field">
+                <span>Emergency fund available (Rs)</span>
+                <input type="number" name="emergencyFundExisting" min="0" step="1000" placeholder="300000">
+              </label>
+              <label class="field">
+                <span>Elderly dependents</span>
+                <input type="number" name="elderlyDependents" min="0" step="1" placeholder="0">
+              </label>
+              <label class="field">
+                <span>Current 80C utilization (Rs/year)</span>
+                <input type="number" name="section80cCurrent" min="0" step="1000" placeholder="120000">
+              </label>
+              <label class="field">
+                <span>Current 80D utilization (Rs/year)</span>
+                <input type="number" name="section80dCurrent" min="0" step="1000" placeholder="20000">
+              </label>
+              <label class="field">
+                <span>Desired retirement lifestyle</span>
+                <select name="retirementLifestyle">
+                  <option value="moderate">Moderate</option>
+                  <option value="comfortable">Comfortable</option>
+                  <option value="aspirational">Aspirational</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Notes / assumptions</span>
+                <textarea name="plannerNotes" rows="4" placeholder="Add any planning assumptions, expected bonuses, or future events."></textarea>
+              </label>
+            </div>
+          </section>
+
+          <div class="form-navigation">
+            <button class="secondary-button" id="prevStepBtn" type="button">Previous</button>
+            <div class="nav-actions-right">
+              <button class="secondary-button" id="nextStepBtn" type="button">Next</button>
+              <button class="primary-button" id="generatePlanBtnBottom" type="submit">Generate Financial Plan</button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel dashboard-panel">
+        <div class="panel-header">
+          <div>
+            <p class="section-kicker">Dynamic output</p>
+            <h2>Financial Plan Dashboard</h2>
+          </div>
+          <div class="dashboard-actions">
+            <button class="secondary-button" type="button" id="downloadExcelBtn" disabled>Download Excel</button>
+            <button class="secondary-button" type="button" id="downloadPdfBtn" disabled>Download PDF</button>
+          </div>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+          <h3>No plan generated yet</h3>
+          <p>Complete the wizard, then generate the dashboard to see scores, charts, projections, and recommendations.</p>
+        </div>
+
+        <div id="dashboardRoot" class="dashboard-root hidden">
+          <section class="dashboard-section hero-score-section">
+            <div class="hero-score-card">
+              <div>
+                <p class="section-kicker">Overall financial health</p>
+                <h3 id="dashboardHouseholdName">Household Dashboard</h3>
+                <p id="dashboardDate" class="muted-text"></p>
+              </div>
+              <div class="hero-score-metrics">
+                <div class="score-pill" id="overallScorePill">0 / 100</div>
+                <div class="score-meta">
+                  <span id="financialFreedomStatus">Status pending</span>
+                  <span id="goalSuccessProbability">Goal success: 0%</span>
+                </div>
+              </div>
+            </div>
+            <div class="hero-score-chart">
+              <canvas id="overallScoreChart" aria-label="Overall score chart"></canvas>
+            </div>
+          </section>
+
+          <section class="dashboard-grid">
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Income & Cash Flow</h3>
+                <p id="cashFlowSummary">Waiting for inputs</p>
+              </div>
+              <div class="chart-wrap"><canvas id="incomeSplitChart"></canvas></div>
+              <div class="chart-wrap small-chart"><canvas id="monthlySurplusChart"></canvas></div>
+              <div id="incomeCashFlowMetrics" class="metric-grid"></div>
+            </article>
+
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Net Worth Snapshot</h3>
+                <p id="netWorthSummary">Assets and liabilities overview</p>
+              </div>
+              <div class="chart-wrap"><canvas id="netWorthChart"></canvas></div>
+              <div id="netWorthMetrics" class="metric-grid"></div>
+            </article>
+
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Asset Allocation</h3>
+                <p>Current vs ideal portfolio mix</p>
+              </div>
+              <div class="double-chart-grid">
+                <div class="chart-wrap"><canvas id="currentAllocationChart"></canvas></div>
+                <div class="chart-wrap"><canvas id="idealAllocationChart"></canvas></div>
+              </div>
+            </article>
+
+            <article class="dashboard-card full-width">
+              <div class="card-header">
+                <h3>Goal Tracker</h3>
+                <p id="goalTrackerSummary">Future value and SIP needs</p>
+              </div>
+              <div class="table-wrap">
+                <table id="goalTrackerTable">
+                  <thead></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Retirement Readiness</h3>
+                <p id="retirementSummary">Corpus planning</p>
+              </div>
+              <div class="progress-card">
+                <div class="progress-stat"><span id="retirementScoreText">0%</span><small>Readiness score</small></div>
+                <div class="progress-track">
+                  <div id="retirementProgressFill" class="progress-track-fill"></div>
+                </div>
+              </div>
+              <div id="retirementMetrics" class="metric-grid"></div>
+            </article>
+
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Insurance Adequacy</h3>
+                <p id="insuranceSummary">Coverage gap analysis</p>
+              </div>
+              <div class="table-wrap compact-table">
+                <table id="insuranceTable">
+                  <thead></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Emergency Fund</h3>
+                <p id="emergencySummary">Liquidity readiness</p>
+              </div>
+              <div class="chart-wrap"><canvas id="emergencyFundChart"></canvas></div>
+              <div id="emergencyMetrics" class="metric-grid"></div>
+            </article>
+
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Liability Health</h3>
+                <p id="liabilitySummary">EMI and debt load</p>
+              </div>
+              <div id="liabilityMetrics" class="metric-grid"></div>
+              <div class="table-wrap compact-table">
+                <table id="liabilityTable">
+                  <thead></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Tax Efficiency</h3>
+                <p id="taxSummary">80C and 80D utilization</p>
+              </div>
+              <div class="chart-wrap"><canvas id="taxEfficiencyChart"></canvas></div>
+              <div id="taxMetrics" class="metric-grid"></div>
+            </article>
+
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Risk Diagnostics</h3>
+                <p id="riskSummary">6-dimension risk scan</p>
+              </div>
+              <div class="chart-wrap"><canvas id="riskRadarChart"></canvas></div>
+            </article>
+
+            <article class="dashboard-card">
+              <div class="card-header">
+                <h3>Priority Action Items</h3>
+                <p>Top recommendations to improve financial health</p>
+              </div>
+              <div id="actionItemsList" class="action-items-list"></div>
+            </article>
+
+            <article class="dashboard-card full-width">
+              <div class="card-header">
+                <h3>Executive Summary</h3>
+                <p>High-level interpretation of the plan</p>
+              </div>
+              <div id="executiveSummaryList" class="executive-summary-list"></div>
+              <div class="assumptions-block">
+                <h4>Assumptions</h4>
+                <div id="assumptionsList" class="assumptions-list"></div>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="familyRowTemplate">
+    <div class="dynamic-row">
+      <label class="field"><span>Name</span><input type="text" data-field="name" placeholder="Amit Sharma"></label>
+      <label class="field"><span>Age</span><input type="number" data-field="age" min="0" step="1" placeholder="38"></label>
+      <label class="field"><span>Relation</span><input type="text" data-field="relation" placeholder="Self"></label>
+      <label class="field"><span>Occupation</span><input type="text" data-field="occupation" placeholder="Software Engineer"></label>
+      <label class="field"><span>Earning member</span>
+        <select data-field="isEarning">
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </label>
+      <label class="field"><span>Dependent</span>
+        <select data-field="isDependent">
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+      </label>
+      <button class="icon-button remove-row-btn" type="button" data-remove-row>Remove</button>
+    </div>
+  </template>
+
+  <template id="incomeRowTemplate">
+    <div class="dynamic-row">
+      <label class="field"><span>Member / Source</span><input type="text" data-field="member" placeholder="Amit Sharma"></label>
+      <label class="field"><span>Monthly income (Rs)</span><input type="number" data-field="monthlyIncome" min="0" step="1000" placeholder="180000"></label>
+      <label class="field"><span>Annual bonus (Rs)</span><input type="number" data-field="annualBonus" min="0" step="1000" placeholder="200000"></label>
+      <label class="field"><span>Growth rate %</span><input type="number" data-field="growthRate" min="0" step="0.1" placeholder="8"></label>
+      <label class="field"><span>Retirement age</span><input type="number" data-field="retirementAge" min="40" max="90" step="1" placeholder="60"></label>
+      <button class="icon-button remove-row-btn" type="button" data-remove-row>Remove</button>
+    </div>
+  </template>
+
+  <template id="expenseRowTemplate">
+    <div class="dynamic-row">
+      <label class="field"><span>Category</span><input type="text" data-field="category" placeholder="Rent"></label>
+      <label class="field"><span>Monthly amount (Rs)</span><input type="number" data-field="monthlyAmount" min="0" step="500" placeholder="35000"></label>
+      <label class="field"><span>Expense type</span>
+        <select data-field="expenseType">
+          <option value="essential">Essential</option>
+          <option value="discretionary">Discretionary</option>
+        </select>
+      </label>
+      <label class="field"><span>Inflation %</span><input type="number" data-field="inflationRate" min="0" step="0.1" placeholder="6"></label>
+      <button class="icon-button remove-row-btn" type="button" data-remove-row>Remove</button>
+    </div>
+  </template>
+
+  <template id="assetRowTemplate">
+    <div class="dynamic-row">
+      <label class="field"><span>Asset type</span><input type="text" data-field="type" placeholder="Equity Mutual Fund"></label>
+      <label class="field"><span>Category</span>
+        <select data-field="category">
+          <option value="equity">Equity</option>
+          <option value="debt">Debt</option>
+          <option value="cash">Cash</option>
+          <option value="real-estate">Real Estate</option>
+          <option value="gold">Gold</option>
+          <option value="other">Other</option>
+        </select>
+      </label>
+      <label class="field"><span>Current value (Rs)</span><input type="number" data-field="currentValue" min="0" step="1000" placeholder="950000"></label>
+      <label class="field"><span>Monthly contribution (Rs)</span><input type="number" data-field="monthlyContribution" min="0" step="500" placeholder="15000"></label>
+      <label class="field"><span>Expected return %</span><input type="number" data-field="expectedReturn" min="0" step="0.1" placeholder="12"></label>
+      <label class="field"><span>Liquidity</span>
+        <select data-field="liquidity">
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </label>
+      <label class="field"><span>Retirement asset</span>
+        <select data-field="isRetirementAsset">
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+      </label>
+      <label class="field"><span>Primary residence</span>
+        <select data-field="isPrimaryResidence">
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+      </label>
+      <button class="icon-button remove-row-btn" type="button" data-remove-row>Remove</button>
+    </div>
+  </template>
+
+  <template id="liabilityRowTemplate">
+    <div class="dynamic-row">
+      <label class="field"><span>Loan type</span><input type="text" data-field="type" placeholder="Home Loan"></label>
+      <label class="field"><span>Outstanding (Rs)</span><input type="number" data-field="outstanding" min="0" step="1000" placeholder="3200000"></label>
+      <label class="field"><span>Interest rate %</span><input type="number" data-field="interestRate" min="0" step="0.1" placeholder="8.4"></label>
+      <label class="field"><span>Monthly EMI (Rs)</span><input type="number" data-field="emi" min="0" step="500" placeholder="32500"></label>
+      <label class="field"><span>Remaining tenure (years)</span><input type="number" data-field="tenureYears" min="0" step="1" placeholder="14"></label>
+      <button class="icon-button remove-row-btn" type="button" data-remove-row>Remove</button>
+    </div>
+  </template>
+
+  <template id="insuranceRowTemplate">
+    <div class="dynamic-row">
+      <label class="field"><span>Policy type</span>
+        <select data-field="type">
+          <option value="life">Life</option>
+          <option value="health">Health</option>
+          <option value="critical-illness">Critical Illness</option>
+        </select>
+      </label>
+      <label class="field"><span>Insured person</span><input type="text" data-field="insuredPerson" placeholder="Amit Sharma"></label>
+      <label class="field"><span>Coverage amount (Rs)</span><input type="number" data-field="coverage" min="0" step="1000" placeholder="10000000"></label>
+      <label class="field"><span>Annual premium (Rs)</span><input type="number" data-field="premium" min="0" step="500" placeholder="25000"></label>
+      <button class="icon-button remove-row-btn" type="button" data-remove-row>Remove</button>
+    </div>
+  </template>
+
+  <template id="goalRowTemplate">
+    <div class="dynamic-row">
+      <label class="field"><span>Goal name</span><input type="text" data-field="name" placeholder="Child Education"></label>
+      <label class="field"><span>Target year</span><input type="number" data-field="targetYear" min="2024" max="2100" step="1" placeholder="2036"></label>
+      <label class="field"><span>Current cost (Rs)</span><input type="number" data-field="currentCost" min="0" step="1000" placeholder="2500000"></label>
+      <label class="field"><span>Inflation %</span><input type="number" data-field="inflationRate" min="0" step="0.1" placeholder="10"></label>
+      <label class="field"><span>Priority</span>
+        <select data-field="priority">
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </label>
+      <button class="icon-button remove-row-btn" type="button" data-remove-row>Remove</button>
+    </div>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="./js/compute.js"></script>
+  <script src="./js/dashboard.js"></script>
+  <script src="./js/export.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
